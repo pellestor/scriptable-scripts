@@ -1,19 +1,25 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-green; icon-glyph: magic;
+
+// Fetch API keys securely from Scriptable’s Keychain
 const TODOIST_API_KEY = Keychain.get("TODOIST_API_KEY");
 const OPENAI_API_KEY = Keychain.get("OPENAI_API_KEY");
+
+// Define project and section IDs
 const INBOX_PROJECT_ID = "2240869572";  // Replace with your Inbox project ID
 const REVIEWED_SECTION_ID = "185733968";  // Replace with your REVIEWED section ID
+
 const axios = importModule("axios");  // Import axios for HTTP requests
 
-// Vérifie si les clés existent
+// Check if API keys exist
 if (!TODOIST_API_KEY || !OPENAI_API_KEY) {
-    console.error("❌ ERREUR: Les clés API sont manquantes dans Keychain.");
-    console.error("Stocke-les avec Keychain.set() dans Scriptable.");
+    console.error("❌ ERROR: Missing API Keys in Keychain.");
+    console.error("Store them using: Keychain.set('TODOIST_API_KEY', 'your_key')");
     return;
 }
 
+// Function to fetch tasks from Todoist Inbox
 async function fetchInboxTasks() {
     try {
         const response = await axios.get("https://api.todoist.com/rest/v2/tasks", {
@@ -27,6 +33,7 @@ async function fetchInboxTasks() {
     }
 }
 
+// Function to process task text using OpenAI
 async function processTaskText(text) {
     try {
         const response = await axios.post("https://api.openai.com/v1/chat/completions", {
@@ -53,6 +60,7 @@ async function processTaskText(text) {
     }
 }
 
+// Function to update task content in Todoist
 async function updateTaskContent(taskId, newContent) {
     try {
         await axios.post(`https://api.todoist.com/rest/v2/tasks/${taskId}`, {
@@ -70,6 +78,7 @@ async function updateTaskContent(taskId, newContent) {
     }
 }
 
+// Function to move the task to the "REVIEWED" section
 async function moveTaskToReviewed(taskId) {
     try {
         await axios.post(`https://api.todoist.com/rest/v2/tasks/${taskId}/move`, {
@@ -87,6 +96,7 @@ async function moveTaskToReviewed(taskId) {
     }
 }
 
+// Function to process all inbox tasks
 async function processInboxTasks() {
     const tasks = await fetchInboxTasks();
 
@@ -106,4 +116,5 @@ async function processInboxTasks() {
     console.log("🎉 All tasks reviewed and moved to 'REVIEWED' section.");
 }
 
+// Execute script
 await processInboxTasks();
