@@ -1,11 +1,18 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-green; icon-glyph: magic;
-const TODOIST_API_KEY = "2ac784959c4cf80074f20c72979e8510fc1453c3";  // Replace with your Todoist API key
-const OPENAI_API_KEY = "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";  // Replace with your OpenAI API key
+const TODOIST_API_KEY = Keychain.get("TODOIST_API_KEY");
+const OPENAI_API_KEY = Keychain.get("OPENAI_API_KEY");
 const INBOX_PROJECT_ID = "2240869572";  // Replace with your Inbox project ID
 const REVIEWED_SECTION_ID = "185733968";  // Replace with your REVIEWED section ID
 const axios = importModule("axios");  // Import axios for HTTP requests
+
+// Vérifie si les clés existent
+if (!TODOIST_API_KEY || !OPENAI_API_KEY) {
+    console.error("❌ ERREUR: Les clés API sont manquantes dans Keychain.");
+    console.error("Stocke-les avec Keychain.set() dans Scriptable.");
+    return;
+}
 
 async function fetchInboxTasks() {
     try {
